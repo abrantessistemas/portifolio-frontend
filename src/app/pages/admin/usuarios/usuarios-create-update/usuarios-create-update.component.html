@@ -1,0 +1,99 @@
+<form (ngSubmit)="save()" [formGroup]="form">
+  <div fxLayout="row" fxLayoutAlign="start center" mat-dialog-title>
+    <img *ngIf="userPhotoUrl" [src]="userPhotoUrl" class="avatar mr-5" style="cursor: pointer;" #tooltip="matTooltip"
+      mat-mini-fab matTooltip="Alterar foto" (click)="changePhoto()">
+
+    <h2 *ngIf="form.get('name').value" class="headline m-0" fxFlex="auto">
+      {{ form.get('name').value }}</h2>
+    <h2 *ngIf="!form.get('name').value" class="headline m-0" fxFlex="auto">Novo Usuário</h2>
+
+    <button class="text-secondary" mat-dialog-close mat-icon-button type="button">
+      <mat-icon [icIcon]="icClose"></mat-icon>
+    </button>
+  </div>
+
+  <mat-divider class="-mx-6 text-border"></mat-divider>
+
+  <mat-dialog-content fxLayout="column">
+    <div class="flex flex-col sm:flex-row">
+      <mat-form-field class="mt-6 flex-auto">
+        <mat-label>Login</mat-label>
+        <input cdkFocusInitial formControlName="username" autocomplete="off" matInput required>
+        <mat-icon [icIcon]="icPerson" class="mr-3" matPrefix></mat-icon>
+        <mat-error *ngIf="form.get('username').errors?.serverError">
+          {{ form.get('username').errors?.serverError }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="sm:mt-6 sm:ml-6 flex-auto" *ngIf="isCreateMode()">
+        <mat-label>Senha</mat-label>
+        <input [type]="inputType" formControlName="password" autocomplete="new-password" matInput required>
+        <button (click)="togglePassword()" mat-icon-button matSuffix type="button">
+          <mat-icon *ngIf="passwordVisible" [icIcon]="icVisibility"></mat-icon>
+          <mat-icon *ngIf="!passwordVisible" [icIcon]="icVisibilityOff"></mat-icon>
+        </button>
+        <mat-error *ngIf="form.get('password').errors?.serverError">
+          {{ form.get('password').errors?.serverError }}
+        </mat-error>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field class="flex-auto">
+      <mat-label>Nome</mat-label>
+      <input formControlName="name" autocomplete="off" matInput required>
+      <mat-error *ngIf="form.get('name').errors?.serverError">
+        {{ form.get('name').errors?.serverError }}
+      </mat-error>
+    </mat-form-field>
+
+    <div class="flex flex-col sm:flex-row">
+      <mat-form-field class="flex-auto">
+        <mat-label>Tenant</mat-label>
+        <input formControlName="tenant" matInput required>
+        <mat-icon [icIcon]="icLocationCity" class="mr-3" matPrefix></mat-icon>
+        <mat-error *ngIf="form.get('tenant').errors?.serverError">
+          {{ form.get('tenant').errors?.serverError }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="sm:ml-6 flex-auto">
+        <mat-label>Grupo</mat-label>
+        <mat-select formControlName="role" matInput required>
+          <mat-option value="MASTER">MASTER</mat-option>
+          <mat-option value="SYSTEM">SYSTEM</mat-option>
+          <mat-option value="USER">USER</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('role').errors?.serverError">
+          {{ form.get('role').errors?.serverError }}
+        </mat-error>
+        <mat-icon [icIcon]="icSecurity" class="mr-3" matPrefix></mat-icon>
+      </mat-form-field>
+    </div>
+
+    <mat-form-field class="flex-auto">
+      <mat-label>Data Expiração</mat-label>
+      <input formControlName="expiresAt" [matDatepicker]="datepickerExpiration" (click)="datepickerExpiration.open()"
+        (focus)="datepickerExpiration.open()" matInput required readonly>
+      <mat-datepicker-toggle [for]="datepickerExpiration" matSuffix></mat-datepicker-toggle>
+      <mat-datepicker #datepickerExpiration></mat-datepicker>
+    </mat-form-field>
+
+    <div fxLayout="row" fxLayoutAlign="space-between">
+      <div fxLayout="column" fxLayoutGap="8px">
+        <mat-slide-toggle [checked]="form.get('active').value === true" formControlName="active">Usuário
+          ativo
+        </mat-slide-toggle>
+        <mat-slide-toggle [checked]="form.get('mustChangePassword').value === true"
+          formControlName="mustChangePassword">Alterar senha no próximo acesso</mat-slide-toggle>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close type="button">Cancelar</button>
+    <button *ngIf="isCreateMode()" [disabled]="!form.valid" color="primary" mat-button type="submit">Criar
+      Usuário</button>
+    <button *ngIf="isUpdateMode()" [disabled]="!form.valid" color="primary" mat-button type="submit">Modificar
+      Usuário</button>
+  </mat-dialog-actions>
+</form>
